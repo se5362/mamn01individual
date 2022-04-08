@@ -24,7 +24,7 @@ public class CompassActivity extends AppCompatActivity {
     private long timeout = 0;
     private float currentAzimuth;
     private SOTWFormatter sotwFormatter;
-    Vibrator vibrator;
+    public static Vibrator vibrator;
     long[] pattern = {0, 500, 100};
 
     @Override
@@ -105,16 +105,7 @@ public class CompassActivity extends AppCompatActivity {
 
                         adjustArrow(azimuth);
                         adjustSotwLabel(azimuth);
-                        if ((azimuth < 1 || azimuth > 359) && (System.currentTimeMillis() - timeout) > 100){
-                            timeout = System.currentTimeMillis();
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
-                                vibrator.vibrate(pattern, 1);
-                            } else {
-                                //vibrator.vibrate(500);
-                            }
-                        } else {
-                            vibrator.cancel();
-                        }
+
 
                     }
                 });

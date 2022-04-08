@@ -5,6 +5,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
+import android.os.Vibrator;
+import android.os.VibrationEffect;
 
 public class Compass implements SensorEventListener {
     private static final String TAG = "Compass";
@@ -18,12 +21,14 @@ public class Compass implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor gsensor;
     private Sensor msensor;
+    Vibrator vibrator;
+    long[] pattern = {0, 500, 100};
 
     private float[] mGravity = new float[3];
     private float[] mGeomagnetic = new float[3];
     private float[] R = new float[9];
     private float[] I = new float[9];
-
+    private long timeout = 0;
     private float azimuth;
     private float azimuthFix;
 
@@ -39,6 +44,7 @@ public class Compass implements SensorEventListener {
                 SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(this, msensor,
                 SensorManager.SENSOR_DELAY_GAME);
+        vibrator = CompassActivity.vibrator;
     }
 
     public void stop() {
@@ -102,6 +108,16 @@ public class Compass implements SensorEventListener {
                     listener.onNewAzimuth(azimuth);
                 }
             }
+        }
+        if ((azimuth < 5 || azimuth > 355) && (System.currentTimeMillis() - timeout) > 100){
+            timeout = System.currentTimeMillis();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ) {
+                vibrator.vibrate(pattern, 1);
+            } else {
+                //vibrator.vibrate(500);
+            }
+        } else {
+            vibrator.cancel();
         }
     }
 
